@@ -26,6 +26,19 @@ I'm Tyler Schade, and I'm interested in people, books, computers, athletics and 
   - Ecommerce Agency, building custom software for Checkout, Inventory Management, Search and Content Management
   - PHP, MySQL, Magento, JavaScript, HTML, CSS, jQuery
 
-## Blog
-
 ## Interests
+
+- Reading
+- Writing
+- Math
+- Chess
+- Snowboarding
+- Mountain Biking
+- Electronic Music
+- Fitness
+- Psychology
+
+## Social
+[Twitter](https://x.com/tylerschade) 
+[LinkedIn](https://www.linkedin.com/in/tylerschade)
+[Github](https://github.com/tjons)
