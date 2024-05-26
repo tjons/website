@@ -4,7 +4,7 @@ date: 2024-05-25
 ---
 
 # Concurrency in Go
-_As I mentioned in my previous post, I'm working on uploading some of my reading notes from [Concurrency in Go](https://amzn.to/3WXfxER). These are my unedited notes from chapter 1._
+_As I mentioned in my [previous post](./2024-05-26-booknotes-intro.md), I'm working on uploading some of my reading notes from [Concurrency in Go](https://amzn.to/3WXfxER). These are my unedited notes from chapter 1._
 
 ## Chapter 1
 
