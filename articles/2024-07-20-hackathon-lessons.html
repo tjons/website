@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>Lessons from my first hackathon | Tyler Schade</title>
+    </head>
+    <body>
+        <header>
+            <h1>Tyler Schade</h1>
+            <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="">Home</a></li>
+                    <li><a href="now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+        </header>
+        <h2>Lessons from my first hackathon</h2>
+        <p>Last month, after 11(!) years of being paid to write software, 12(!) years of writing software, and 8 years of being a "Professional Software Engineer", I finally attended my first hackathon! Building software to win/place well in a hackathon is startlingly different from the life of a "Professional Software Engineer", and it was a fun experience that reminded me of how exciting it is to try to build a product quickly. I wanted to write a blog post about the lessons I learned and I finally got around to it this weekend.</p>
+        <p>The hackathon, <i>Hack Miami</i>, was sponsored by Google Cloud and took place over a two-day weekend. There were about 100 participants split into teams of 2-5 people -- I'm not sure how many teams we ended up with. Teams could either be pre-arranged or assembled the first morning. A friend agreed to attend with me but had a last minute conflict so I showed up solo and walked around talking to people. I found a team pretty quickly that was looking for some engineering help, so I joined them within the first hour. They wanted to work on a fintech app that used AI to make portfolio recommendations and provide signals from technical analysis on when to buy/sell that portfolio. We quickly got to work.</p>
+        <p>During the hackathon, I naturally gravitated to the backend (user profiles, auth, and the AI portfilio recommendations engine). Given that this was a Google Cloud event, we had free Google Cloud accounts provisioned for us with access to most resources for the weekend, so I used Gemini. You can see most of the code I wrote here: https://github.com/tjons/text-to-trade. Originally we tried to implement the entire experience as a text-messaging app, where you texted a number and set up your account, asked for the status of your portfolio, made trading decisions, etc. This seemed helpful because the hackathon had an AI focus and so using Gemini for natural language interactions would check the AI box, and it also would save us from having to create a web or mobile UI. Unfortunately, as I was implementing it I realized that we did not have access to SMS through the Google Cloud resources we were given, so I attempted to set up a Twilio number. Twilio required 7 days to provision the number for anti-spam provisions, which meant it was out. We then decided to create a mobile UI with flutter, which Marco, the other developer, began implementing.</p>
+        <p>We worked all day Saturday and the building was available to us until 11pm, but I had a date night planned with Zoë so I left at 7. We made a lot of progress and I was semi-optimistic that we could have a functional prototype by 4pm Sunday, which appeared to be the cutoff.</p>
+        <p>Sunday we reconvened and I realized that we were further out than I had thought on a fully functional prototype. We also only had til 1pm to complete our submission, so we decided to submit screenshots of backend responses and the mobile app UI without hooking them together. We completed enough of the parts around 1pm to submit, and there was a long delay in judging so I left a little early. We ended up placing 5th which was quite a surprise!</p>
+        <p>Here are the lessons I learned:</p>
+        <p>
+            <ol>
+                <li><p>Use a simple tech stack that you can rapidly iterate on</p><p>I used my typical stack of Go, gRPC, Postgres, Kubernetes and Google Cloud - Kubernetes was 100 percent overkill and I think that even the time it takes to build docker containers is a net-drag during a hackathon. If I had used TypeScript or some other interpreted language I think we could have gotten further. I did use the excellent <a href="https://github.com/grpc-ecosystem/grpc-gateway">gRPC gateway project</a> and enjoyed working with it, but I haven't used it in several years and it certainly slowed us down.</p></li>
+                <li><p>Align architecturally and share responsibilities</p><p>Our team had two developers, one designer/developer and two strategy/product folks. I originally thought it would be simpler to have the other developer focus on UI, me focus on backend, and the designer to focus on UX. However, I underestimated the amount of backend work we needed to do, and I think if I had spread it across the other two technical people we could have gotten further and perhaps completed our prototype in time to demo it.</p><p>In addition, I didn't spend enough time whiteboarding the architecture of <i>how we were going to build it</i>, mostly because I felt crunched for time. I think if we had done a little more architectural planning we could have more efficiently delegated work and gotten closer to our goal.</p></li>
+                <li><p>Don't join the first team you mesh with</p><p>I encountered a mix of folks when I was looking for a team, some of whom were friendly and inviting and some of whom clearly were already attached to a group they had planned to work with. I loved the people on my team and clicked quickly but I wasn't particularly interested in the idea and I think I would have had more fun if I found a team working on something I was more interested in. While team matching may feel like something you have to do as quickly as possible, you don't and you can take your time to find both people you like and an idea you like.</p></li>
+                <li><p>AI is fun but unpredictable</p><p>This was my first time building an AI-powered backend service as my day-to-day work in Cloud-Native Networking doesn't really involve AI. There were some challenges, including implementing basic RAG, unpredictable responses from Gemini, and overall complexity of the project. I had fun and look forward to building more AI-powered products.</p></li>
+                <li><p>Block out all external commitments</p><p>Our date Saturday night was delightful and much needed but I felt bad leaving the team before the doors closed and I wish I had planned it for Sunday night or another evening where I could be fully mentally present. I was locked in and mentally fried from hacking all day and the guilt definitely didn't help me enjoy the evening as much as I had planned.</p></li>
+            </ol>
+        </p>
+        <p>It was a great experience and I'm sad I waited so long into my career to do a hackathon! I found myself jealous of all you engineers who got involved in these when you were learning how to code or in college... I'm looking forward to the next time - I found it refreshing and exciting to try to get something out as quickly as possible.</p>
+    </body>
+</html>
