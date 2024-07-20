@@ -1,0 +1,33 @@
+<hr>
+<p>title: &quot;Concurrency in Go, ch. 1&quot;</p>
+<h2 id="date-2024-05-25">date: 2024-05-25</h2>
+<h1 id="concurrency-in-go">Concurrency in Go</h1>
+<p><em>As I mentioned in my <a href="./2024-05-26-booknotes-intro.md">previous post</a>, I&#39;m working on uploading some of my reading notes from <a href="https://amzn.to/3WXfxER">Concurrency in Go</a>. These are my unedited notes from chapter 1.</em></p>
+<h2 id="chapter-1">Chapter 1</h2>
+<p>Chapter 1 is titled <em>An Introduction to Concurrency</em>, and focuses on discussing some of the background theory and principles behind concurrent programming.</p>
+<h2 id="definitions">Definitions</h2>
+<p><strong>Concurrent</strong>: a process that occurs simultaneously with one or more processes</p>
+<p><strong>Embarrassingly</strong> parallel: a problem that can easily be divided into parallel tasks
+Embarrassingly parallel problems should be solved in a way that the program can scale horizontally.</p>
+<p><strong>Horizontal scaling</strong>: can take instances of your program, run it on more CPUs, or machines, and this will cause the runtime of the program to improve</p>
+<p><strong>Race condition</strong>: occurs when two or more operations must execute in the correct order, but the program has not been written in such a way to guarantee that this order is maintained.</p>
+<p><strong>Data race</strong>: one concurrent operation attempts to read a piece of data while another concurrent operation is attempting to write to the same variable</p>
+<p><strong>Atomicity</strong>
+Something that is considered atomic has the property that within the context that it is operating, it is indivisible or uninterruptible. Key part here is context - something may be atomic in one context but not another.
+Eg, something atomic with the context of the process may not be atomic within the context of the OS, or something that is atomic within the context of the OS may not be atomic within the context of the machine, operation that is atomic within the context of the machine may not be atomic within the context of the application. Layers of atomicity. Can change depending on the currently defined scope. Combining atomic operations does not necessarily produce a larger atomic operation.
+Why does atomicity matter? If something is atomic, it is implied that it is safe within concurrent contexts.</p>
+<p><strong>Critical section</strong>: a section of a program that needs exclusive access to a shared resource</p>
+<p><strong>Deadlock</strong>: a deadlocked program is one in which all concurrent processes are waiting on one another</p>
+<p><strong>Coffman Conditions</strong>:</p>
+<ol>
+<li>Mutual Exclusion: a concurrent process holds exclusive rights to a resource at any one time</li>
+<li>Wait for Condition: a concurrent process must simultaneously hold a resource and be waiting for an additional resource</li>
+<li>No Preemption: a resource held by a concurrent process can only be released by that process, so it fulfills this condition.</li>
+<li>Circular Wait: a concurrent process (P1) must be waiting on a chain of other concurrent processes (P2), which are in turn waiting on it (P1), so it fulfills this final condition
+If you can disprove any one of the 4 Coffman Conditions, you can prevent deadlocks.</li>
+</ol>
+<p><strong>Livelock</strong>: programs that are actively performing concurrent operations, but these operations do nothing to move the state of the program forward
+Two or more concurrent processes attempting to prevent a deadlock without coordination often is a cause of a livelock.
+Think of two people trying to walk down the sidewalk and each stepping in front of the other to go around each other and never going anywhere. That’s a livelock.</p>
+<p><strong>Starvation</strong>: any situation where a concurrent process cannot get all the resources it needs to perform work.
+Starvation usually implies that there are one or more concurrent process that are greedy, i.e., unfairly preventing other concurrent processes from performing their work either as efficiently as possible or at all</p>

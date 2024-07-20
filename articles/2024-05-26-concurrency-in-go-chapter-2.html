@@ -1,0 +1,14 @@
+<hr>
+<p>title: &quot;Concurrency in Go, ch. 2&quot;</p>
+<h2 id="date-2024-05-26">date: 2024-05-26</h2>
+<h1 id="concurrency-in-go">Concurrency in Go</h1>
+<p><em>As I mentioned in a <a href="./2024-05-26-booknotes-intro.md">previous post</a>, I&#39;m working on uploading some of my reading notes from <a href="https://amzn.to/3WXfxER">Concurrency in Go</a>. These are my unedited notes from chapter 2.</em></p>
+<h2 id="chapter-2">Chapter 2</h2>
+<p>Chapter 2 is titled &quot;Modeling your Code: Communicating Sequential Processes&quot; and continues the overview of concurrent programming from <a href="./2024-05-26-concurrency-in-go-chapter-1.md">Chapter 1</a>. </p>
+<h2 id="notes">Notes</h2>
+<p>Concurrently is a property of the code, parallelism is a property of the running program. Just because code is written to be executed concurrently doesn’t mean you will have parallel work being done. For example, a machine with only one core.</p>
+<p>Go’s concurrency model (channels) is based on Tony Hoare’s paper: Communicating Sequential Processes (CSP). Introduced an IO approach to modeling concurrency, with a primitive similar to channels for message passing and synchronization. </p>
+<p>Since go’s runtime manages multiplexing and scheduling goroutines for you, you don’t have to worry about the lower level details of creating threads and scheduling them.</p>
+<p>In go, there are lower level synchronization primitives such as mutexs etc. It’s generally preferable to use channels to synchronize IO, except when in performance critical sections.</p>
+<p>Locks should generally be internal to a type and never exposed. </p>
+<p>Summary of the go philosophy on concurrency: aim for simplicity and readability, use channels when possible, and treat goroutines like a free resource. (Not sure I agree with the last point tbh).</p>
