@@ -39,3 +39,9 @@ h2 {
 ul li {
     margin: 10px;
 }
+
+.lately-date {
+    font-weight: bold;
+    font-style: italic;
+    padding: 10px;
+}
