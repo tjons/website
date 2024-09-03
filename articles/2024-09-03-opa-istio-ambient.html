@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../../style.css">
+        <title>Open Policy Agent (OPA) and Istio Ambient | Tyler Schade</title>
+    </head>
+    <body>
+        <header>
+            <h1>Tyler Schade</h1>
+            <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="https://tylerscha.de">Home</a></li>
+                    <li><a href="now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+        </header>
+        <h2>Open Policy Agent (OPA) and Istio Ambient</h2>
+        <p>
+            <i>This is the first article in a series on use cases for Open Policy Agent in Istio Ambient Mesh. The series will cover using OPA as an External Authorization service, suggested deployment modes, and optimal architecture for reliability and scalability. We will also discuss using OPA for resource validation and control around Istio features.</i>
+        </p>
+        <p>
+            As I've <a href="https://tylerscha.de/articles/2024-08-29-five-things-i-like-lately.html">previous discussed</a>, I'm really excited about Istio Ambient Mesh. It's an obvious step forward for the service mesh, and I'm committed to helping people understand <i>how</i> they can leverage Ambient to accomplish their goals. I think there's a dearth of content on usage patterns and tutorials specifically for Ambient, and I'm hoping to help fill that gap.
+        </p>
+        <p>
+            This article will cover how to set up Open Policy Agent (OPA) as an External Authorization service in Istio Ambient Mesh. Authorization is a critical part of any security model, and OPA is a powerful tool for implementing fine-grained access control policies. By using OPA as an External Authorization service, you can enforce policies that are more complex than what Istio's built-in authorization policies can handle.
+        </p>
+        <p>
+            OPA has a plugin model that allows you to layer additional functionality on top of the base policy engine. This is a complex usecase, but luckily for us, (LINK NEEDED)the OPA community already created and maintains a version of the OPA engine that implements the (LINK NEEDED)Envoy External Authorization API. This means that you can use OPA as an External Authorization service in Istio Ambient Mesh without having to write any custom code.
+        </p>
+        <p>
+            <h4>Cluster Diagram</h4>
+            <img src="https://tylerscha.de/media/istio-ambient-opa-without-traffic.png" alt="OPA and Istio Ambient"/>
+        </p>
+    </body>
+</html>
