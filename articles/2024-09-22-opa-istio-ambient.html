@@ -163,7 +163,7 @@ spec:
             </code>
         </pre>
         <br>
-        This is a pretty standard Kubernetes <span class="inline-code">Deployment</span> object. We're running the <span class="inline-code">openpolicyagent/opa:0.68.0-istio-4-static</span> image, which is a recent release of the OPA-Envoy-Plugin. The <span class="inline-code">-istio</span> and <span class="inline-code">-envoy</span> tags are actually identical. The deployment will run OPA listening on port <span class="inline-code">8181</span> with the diagnostic port of <span class="inline-code">8282</span>. OPA uses the diagnostic address for healthchecks, which we've defined for Kubernetes here. 
+        This is a pretty standard Kubernetes <span class="inline-code">Deployment</span> object. We're running the <span class="inline-code">openpolicyagent/opa:0.68.0-istio-4-static</span> image, which is a recent release of the OPA-Envoy-Plugin. The <span class="inline-code">-istio</span> and <span class="inline-code">-envoy</span> image varients are actually identical. The deployment will run OPA listening on port <span class="inline-code">8181</span> with the diagnostic port of <span class="inline-code">8282</span>. OPA uses the diagnostic address for healthchecks, which we've defined for Kubernetes here. 
         <br>
         We're going to define two configmaps later, and they'll be mounted as volumes into the <span class="inline-code">Deployment</span> and used to configure the OPA server and the Rego Policy, respectively. 
         </p>
