@@ -460,7 +460,7 @@ EOF
         class="inline-code">opa-ext-authz-grpc</span> provider as the external authorizer, which you'll notice matches
     what we defined in the <span class="inline-code">istio</span> system-side <span
         class="inline-code">ConfigMap</span>. It applies authorization via the OPA server to all requests through this
-    waypoint, except for the health endpoint. (TODO: is this necessary?). Now that we've applied the <span
+    waypoint. Now that we've applied the <span
         class="inline-code">AuthorizationPolicy</span>, let's run traffic through again and validate what we expect:
     <code>
                 curl --user alice:password -vik http://localhost:8080/api/v1/products <span class="comment"># This should fail with a 403</span>
