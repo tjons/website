@@ -3,6 +3,10 @@ body {
     margin: auto;
 }
 
+p.content {
+    line-height: 1.5em;
+}
+
 header {
     padding: 10px;
     text-align: center;
@@ -63,4 +67,11 @@ code {
     padding: 1rem;
     background-color: #f4f4f4;
     font-size: 1.1em;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    overflow: scroll;
+}
+
+code .comment {
+    color: darkgray;
 }

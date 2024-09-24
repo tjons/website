@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="../style.css">
-        <title>Open Policy Agent (OPA) and Istio Ambient | Tyler Schade</title>
-    </head>
-    <body>
-        <header>
-            <h1>Tyler Schade</h1>
-            <div class="content">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Open Policy Agent (OPA) and Istio Ambient | Tyler Schade</title>
+</head>
+
+<body>
+    <header>
+        <h1>Tyler Schade</h1>
+        <div class="content">
             <p>My writing/blog/whatever-you-want-to-call-it</p>
             <nav>
                 <ul>
@@ -16,53 +18,86 @@
                 </ul>
             </nav>
         </div>
-        </header>
-        <h2>Open Policy Agent (OPA) and Istio Ambient</h2>
-        <p>
-            <i>This is the first article in a series on use cases for Open Policy Agent in Istio Ambient Mesh. The series will cover using OPA as an External Authorization service, suggested deployment modes, and optimal architecture for reliability and scalability. We will also discuss using OPA for resource validation and control around Istio features.</i>
-        </p>
-        <p>
-            As I've <a href="https://tylerscha.de/articles/2024-08-29-five-things-i-like-lately.html">previous discussed</a>, I'm really excited about Istio Ambient Mesh. It's an obvious step forward for the service mesh, and I'm committed to helping people understand <i>how</i> they can leverage Ambient to accomplish their goals. I think there's a dearth of content on usage patterns and tutorials specifically for Ambient, and I'm hoping to help fill that gap.
-        </p>
-        <p>
-            This article will cover how to set up Open Policy Agent (OPA) as an External Authorization service in Istio Ambient Mesh. Authorization is a critical part of any security model, and OPA is a powerful tool for implementing fine-grained access control policies. By using OPA as an External Authorization service, you can enforce policies that are more complex than what Istio's built-in authorization policies can handle.
-        </p>
-        <p>
-            OPA has a plugin model that allows you to layer additional functionality on top of the base policy engine. This is a complex usecase, but luckily for us, <a href="https://github.com/open-policy-agent/opa-envoy-plugin">the OPA community already created and maintains a version of the OPA engine</a> that implements the <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter">Envoy External Authorization API</a>. This means that you can use OPA as an External Authorization service in Istio Ambient Mesh without having to write any custom code.
-        </p>
-        <p>
-            <h4>Cluster Diagram</h4>
-            <img src="https://tylerscha.de/media/istio-ambient-opa-without-traffic.png" alt="OPA and Istio Ambient"/>
-        </p>
-        <p>In the above diagram, you can see a diagram of the resources in our cluster. We have three namespaces: the default <span class="inline-code">istio-system</span> namespace, where the Istio Control Plane (<span class="inline-code">istiod</span>) and the <span class="inline-code">ztunnel</span> proxy run; the <span class="inline-code">app</span> namespace, where I've installed sample applications; and finally, the <span class="inline-code">platform</span> namespace, where OPA will run and other cluster-level platform components could live. In this example, we're going to deploy OPA as a single deployment. I'll cover using OPA as a daemonset in a future article.</p>
-        <p>
-            <h4>Cluster Diagram with Traffic</h4>
-            <img src="https://tylerscha.de/media/istio-ambient-opa-with-traffic.png" alt="OPA and Istio Ambient with Traffic"/>
-        </p>
-        <p>
-            The above diagram shows the same cluster as the previous diagram, but with traffic flowing through the system. In this tutorial, we'll be sending traffic to the Waypoint proxy in the app namespace, which will perform an Authorization check against the OPA service in the <span class="inline-code">platform</span> namespace. The OPA service will return a decision to the Waypoint proxy, which will either allow or deny the request based on the policy defined in the OPA service. If the request will be allowed, the Waypoint proxy will forward the request to the destination service in the app namespace. Otherwise, the Waypoint will return a 403 Forbidden response to the client.
-        </p>
-        <p>
-            To start this tutorial, let's set up the cluster and install Istio using the <span class="inline-code">ambient</span> profile, along with the Kubernetes Gateway APIs.
-        </p>
-        <p>
-            <code>
-                # Create the cluster<br>
-                kind create cluster --name istio-opa<br>
-                <br>
-                # Install Istio with the ambient profile<br>
-                istioctl install --set profile=ambient --skip-confirmation<br>
-                <br>
-                # Install gateway-api CRDs<br>
-                kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || \<br>
-                    { kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml; }
+    </header>
+    <h2>Open Policy Agent (OPA) and Istio Ambient</h2>
+    <p class="content">
+        <i>This is the first article in a series on use cases for Open Policy Agent in Istio Ambient Mesh. The series
+            will cover using OPA as an External Authorization service, suggested deployment modes, and optimal
+            architecture for reliability and scalability. We will also discuss using OPA for resource validation and
+            control around Istio features.</i>
+    </p>
+    <p class="content">
+        As I've <a href="https://tylerscha.de/articles/2024-08-29-five-things-i-like-lately.html">previous
+            discussed</a>, I'm really excited about Istio Ambient Mesh. It's an obvious step forward for the service
+        mesh, and I'm committed to helping people understand <i>how</i> they can leverage Ambient to accomplish their
+        goals. I think there's a dearth of content on usage patterns and tutorials specifically for Ambient, and I'm
+        hoping to help fill that gap.
+    </p>
+    <p class="content">
+        This article will cover how to set up Open Policy Agent (OPA) as an External Authorization service in Istio
+        Ambient Mesh. Authorization is a critical part of any security model, and OPA is a powerful tool for
+        implementing fine-grained access control policies. By using OPA as an External Authorization service, you can
+        enforce policies that are more complex than what Istio's built-in authorization policies can handle.
+    </p>
+    <p class="content">
+        OPA has a plugin model that allows you to layer additional functionality on top of the base policy engine. This
+        is a complex usecase, but luckily for us, <a href="https://github.com/open-policy-agent/opa-envoy-plugin">the
+            OPA community already created and maintains a version of the OPA engine</a> that implements the <a
+            href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter">Envoy
+            External Authorization API</a>. This means that you can use OPA as an External Authorization service in
+        Istio Ambient Mesh without having to write any custom code.
+    </p>
+    <p class="content">
+    <h4>Cluster Diagram</h4>
+    <img src="https://tylerscha.de/media/istio-ambient-opa-without-traffic.png" alt="OPA and Istio Ambient" />
+    </p>
+    <p class="content">In the above diagram, you can see a diagram of the resources in our cluster. We have three
+        namespaces: the default <span class="inline-code">istio-system</span> namespace, where the Istio Control Plane
+        (<span class="inline-code">istiod</span>) and the <span class="inline-code">ztunnel</span> proxy run; the <span
+            class="inline-code">app</span> namespace, where I've installed sample applications; and finally, the <span
+            class="inline-code">platform</span> namespace, where OPA will run and other cluster-level platform
+        components could live. In this example, we're going to deploy OPA as a single deployment. I'll cover using OPA
+        as a daemonset in a future article.</p>
+    <p class="content">
+    <h4>Cluster Diagram with Traffic</h4>
+    <img src="https://tylerscha.de/media/istio-ambient-opa-with-traffic.png" alt="OPA and Istio Ambient with Traffic" />
+    </p>
+    <p class="content">
+        The above diagram shows the same cluster as the previous diagram, but with traffic flowing through the system.
+        In this tutorial, we'll be sending traffic to the Waypoint proxy in the app namespace, which will perform an
+        Authorization check against the OPA service in the <span class="inline-code">platform</span> namespace. The OPA
+        service will return a decision to the Waypoint proxy, which will either allow or deny the request based on the
+        policy defined in the OPA service. If the request will be allowed, the Waypoint proxy will forward the request
+        to the destination service in the app namespace. Otherwise, the Waypoint will return a 403 Forbidden response to
+        the client.
+    </p>
+    <p class="content">
+        To start this tutorial, let's set up the cluster and install Istio using the <span
+            class="inline-code">ambient</span> profile, along with the Kubernetes Gateway APIs.
+    </p>
+    <p>
+        <pre>
+        <code>
+<span class="comment"># Create the cluster</span>
+kind create cluster --name istio-opa
+
+<span class="comment"># Install Istio with the ambient profile</span>
+istioctl install --set profile=ambient --skip-confirmation
+
+<span class="comment"># Install gateway-api CRDs</span>
+kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || \
+    { kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml; }
             </code>
-        </p>
-        <p>
-            Next, let's create the <span class="inline-code">app</span> namespace, where we will install Istio's <span class="inline-code">bookinfo</span> sample app suite. We'll also install a <span class="inline-code">sleep</span> pod, which is another commonly used Istio sample app that comes with a <span class="inline-code">curl</span> client. This will be handy for in-cluster testing later.
-        </p>
-        <p>
-            <code>
+        </pre>
+    </p>
+    <p class="content">
+        Next, let's create the <span class="inline-code">app</span> namespace, where we will install Istio's <span
+            class="inline-code">bookinfo</span> sample app suite. We'll also install a <span
+            class="inline-code">sleep</span> pod, which is another commonly used Istio sample app that comes with a
+        <span class="inline-code">curl</span> client. This will be handy for in-cluster testing later.
+    </p>
+    <p>
+        <code>
                 # Create a namespace for the bookinfo application<br>
                 kubectl create namespace app<br>
                 <br>
@@ -73,40 +108,51 @@
                 # Install sleep application to test in-cluster requests<br>
                 kubectl apply -n app -f https://raw.githubusercontent.com/istio/istio/release-1.23/samples/sleep/sleep.yaml<br>
             </code>
-        </p>
-        <p>
-            There are a few more tasks we need to complete for cluster setup. We need a <span class="inline-code">waypoint</span> proxy to use as our gateway for cluster ingress, and label our namespace to use the ambient dataplane mode, adding our sample apps to the mesh.
-        </p>
-        <p>
-            <code>
-                # Create a gateway for the productpage app<br>
-                kubectl apply -n app -f https://raw.githubusercontent.com/istio/istio/release-1.23/samples/bookinfo/gateway-api/bookinfo-gateway.yaml<br>
-                istioctl waypoint apply -n app --enroll-namespace --wait<br>
-                <br>
-                # Annotate the namespace to use cluster IP<br>
-                kubectl annotate gateway bookinfo-gateway networking.istio.io/service-type=ClusterIP --namespace=app<br>
-                <br>
-                # Label the namespace to use the ambient dataplane mode, adding the workloads in the namespace to the mesh<br>
-                kubectl label namespace app istio.io/dataplane-mode=ambient<br>
+    </p>
+    <p class="content">
+        There are a few more tasks we need to complete for cluster setup. We need a <span
+            class="inline-code">waypoint</span> proxy to use as our gateway for cluster ingress, and label our namespace
+        to use the ambient dataplane mode, adding our sample apps to the mesh.
+    </p>
+    <p class="content">
+        <pre>
+        <code>
+<span class="comment"># Create a gateway for the productpage app</span>
+kubectl apply -n app -f https://raw.githubusercontent.com/istio/istio/release-1.23/samples/bookinfo/gateway-api/bookinfo-gateway.yaml
+istioctl waypoint apply -n app --enroll-namespace --wait
+
+<span class="comment"># Annotate the namespace to use cluster IP</span>
+kubectl annotate gateway bookinfo-gateway networking.istio.io/service-type=ClusterIP --namespace=app
+
+<span class="comment"># Label the namespace to use the ambient dataplane mode, adding the workloads in the namespace to the mesh</span>
+kubectl label namespace app istio.io/dataplane-mode=ambient
             </code>
-        </p>
-        <p>We're almost there! Now, we need to create a namespace for our OPA server to reside in. Let's call that namespace <span class="inline-code">platform</span>, matching the diagram we discussed earlier.</p>
-        <p>
-            <code>
+        </pre>
+    </p>
+    <p class="content">We're almost there! Now, we need to create a namespace for our OPA server to reside in. Let's
+        call that namespace <span class="inline-code">platform</span>, matching the diagram we discussed earlier.</p>
+    <p>
+        <code>
                 kubectl create namespace platform<br>
             </code>
-        </p>
-        <p>
-            Let's recap what we did. We set up a kind cluster, and installed Istio using the Ambient mode, enabling Ambient Mesh in the Kind cluster. We then installed sample apps to use for testing in the <span class="inline-code">app</span> namespace, and added that to the mesh, including a waypoint proxy. Now, we're ready to start building our our <span class="inline-code">platform</span> namespace with Open Policy Agent and configuring Istio to use OPA as the external authorizer.
-        </p>
-        <p>
-            To deploy OPA, we need a few different resources. I'll break them down one by one and then we can apply then in one command.
-        </p>
-        <p>
-            First, we need a <span class="inline-code">Deployment</span> resource to run the OPA pod.
-            <pre>
+    </p>
+    <p class="content">
+        Let's recap what we did. We set up a kind cluster, and installed Istio using the Ambient mode, enabling Ambient
+        Mesh in the Kind cluster. We then installed sample apps to use for testing in the <span
+            class="inline-code">app</span> namespace, and added that to the mesh, including a waypoint proxy. Now, we're
+        ready to start building our our <span class="inline-code">platform</span> namespace with Open Policy Agent and
+        configuring Istio to use OPA as the external authorizer.
+    </p>
+    <p class="content">
+        To deploy OPA, we need a few different resources. I'll break them down one by one and then we can apply then in
+        one command.
+    </p>
+    <p class="content">
+        First, we need a <span class="inline-code">Deployment</span> resource to run the OPA pod.
+    <pre>
 
             <code>
+kubectl apply -f - &lt;&lt;EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -160,18 +206,29 @@ spec:
         - name: opa-policy
         configMap:
             name: opa-policy
+EOF
             </code>
         </pre>
-        <br>
-        This is a pretty standard Kubernetes <span class="inline-code">Deployment</span> object. We're running the <span class="inline-code">openpolicyagent/opa:0.68.0-istio-4-static</span> image, which is a recent release of the OPA-Envoy-Plugin. The <span class="inline-code">-istio</span> and <span class="inline-code">-envoy</span> image varients are actually identical. The deployment will run OPA listening on port <span class="inline-code">8181</span> with the diagnostic port of <span class="inline-code">8282</span>. OPA uses the diagnostic address for healthchecks, which we've defined for Kubernetes here. 
-        <br>
-        We're going to define two configmaps later, and they'll be mounted as volumes into the <span class="inline-code">Deployment</span> and used to configure the OPA server and the Rego Policy, respectively. 
-        </p>
-        <p>
-            An astute reader will notice that in the deployment above, I actually defined a <span class="inline-code">9191</span> port as well. What's that port for?<br>
-            This brings us to the first configmap we will define:
-            <pre>
+    </p>
+    <p class="content">
+    This is a pretty standard Kubernetes <span class="inline-code">Deployment</span> object. We're running the <span
+        class="inline-code">openpolicyagent/opa:0.68.0-istio-4-static</span> image, which is a recent release of the
+    OPA-Envoy-Plugin. The <span class="inline-code">-istio</span> and <span class="inline-code">-envoy</span> image
+    varients are actually identical. The deployment will run OPA listening on port <span class="inline-code">8181</span>
+    with the diagnostic port of <span class="inline-code">8282</span>. OPA uses the diagnostic address for healthchecks,
+    which we've defined for Kubernetes here.
+</p>
+    <p class="content">
+    We're going to define two configmaps later, and they'll be mounted as volumes into the <span
+        class="inline-code">Deployment</span> and used to configure the OPA server and the Rego Policy, respectively.
+    </p>
+    <p class="content">
+        An astute reader will notice that in the deployment above, I actually defined a <span
+            class="inline-code">9191</span> port as well. What's that port for?<br>
+        This brings us to the first configmap we will define:
+    <pre>
                 <code>
+kubectl apply -f - &lt;&lt;EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -185,15 +242,26 @@ data:
         path: istio/authz/allow
     decision_logs:
       console: true
+EOF
                 </code>
             </pre>
-            <br>
-            This <span class="inline-code">ConfigMap</span> is responsible for configuring the OPA server at runtime. It turns on decision logging to the console (<span class="inline-code">STDOUT</span>), which will be helpful when we want to debug later on. Then, it enables the <span class="inline-code">envoy_ext_authz_grpc</span> plugin, which is the actual plugin to Open Policy Agent that implements the Envoy ExternalAuthorizer API. The configuration here instructs the plugin to listen on that <span class="inline-code">9191</span> port we defined on the container here, and to direct requests to the <span class="inline-code">istio/authz/allow</span> rule.
         </p>
-        <p>
-            For our second <span class="inline-code">ConfigMap</span>, we need to provide OPA with the policy we're looking to enforce. I'm going to reuse the rego policy from the <a href="https://www.openpolicyagent.org/docs/latest/envoy-tutorial-istio/#steps">OPA Istio tutorial</a>. Take a look at it here:
-            <pre>
+        <p class="content">
+    This <span class="inline-code">ConfigMap</span> is responsible for configuring the OPA server at runtime. It turns
+    on decision logging to the console (<span class="inline-code">STDOUT</span>), which will be helpful when we want to
+    debug later on. Then, it enables the <span class="inline-code">envoy_ext_authz_grpc</span> plugin, which is the
+    actual plugin to Open Policy Agent that implements the Envoy ExternalAuthorizer API. The configuration here
+    instructs the plugin to listen on that <span class="inline-code">9191</span> port we defined on the container here,
+    and to direct requests to the <span class="inline-code">istio/authz/allow</span> rule.
+    </p>
+    <p class="content">
+        For our second <span class="inline-code">ConfigMap</span>, we need to provide OPA with the policy we're looking
+        to enforce. I'm going to reuse the rego policy from the <a
+            href="https://www.openpolicyagent.org/docs/latest/envoy-tutorial-istio/#steps">OPA Istio tutorial</a>. Take
+        a look at it here:
+    <pre>
                 <code>
+kubectl apply -f - &lt;&lt;EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -207,11 +275,6 @@ data:
     import input.parsed_path
 
     default allow = false
-
-    allow {
-        parsed_path[0] == "health"
-        http_request.method == "GET"
-    }
 
     allow {
         roles_for_user[r]
@@ -247,17 +310,32 @@ data:
             {"method": "GET",  "path": "/api/v1/products"},
         ],
     }
+EOF
                 </code>
             </pre>
-            <br>
-            If you're familar with the Rego Policy Language and its syntax, this is a pretty simple Rego policy. If not, you probably think this is some form of occult incantation. Fear not - the <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego Docs</a> are here to help. Covering the intracicies of Rego is outside the scope of this article, so I'll briefly summarize it. 
-            <br>
-            This policy defines a set of rules that reside in the <span class="inline-code">istio.authz</span> package. The policy denies all requests by default, allowing <span class="inline-code">GET</span> requests to the <span class="inline-code">/health</span> endpoint. The policy then defines two users, <span class="inline-code">Alice</span> and <span class="inline-code">Bob</span>. <span class="inline-code">Alice</span> is the <span class="inline-code">guest</span> user, and <span class="inline-code">Bob</span> is the <span class="inline-code">admin</span> user. The policy will allow guests to send HTTP <span class="inline-code">GET</span> requests to the <span class="inline-code">/productpage</span> endpoint, and will allow admins to send HTTP <span class="inline-code">GET</span> requests to both the <span class="inline-code">/productpage</span> and <span class="inline-code">/api/v1/products</span> endpoints. 
-        </p>
-        <p>
-            With a Rego policy defined, all that's left is a Kubernetes <span class="inline-code">Service</span> object to allow requests to the OPA server. 
-            <pre>
+    </p>
+    <p class="content">
+    If you're familar with the Rego Policy Language and its syntax, this is a pretty simple Rego policy. If not, you
+    probably think this is some form of occult incantation. Fear not - the <a
+        href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego Docs</a> are here to help. Covering the
+    intracicies of Rego is outside the scope of this article, so I'll briefly summarize it.
+    <p class="content">
+    This policy defines a set of rules that reside in the <span class="inline-code">istio.authz</span> package. The
+    policy denies all requests by default, allowing <span class="inline-code">GET</span> requests to the <span
+        class="inline-code">/health</span> endpoint. The policy then defines two users, <span
+        class="inline-code">Alice</span> and <span class="inline-code">Bob</span>. <span
+        class="inline-code">Alice</span> is the <span class="inline-code">guest</span> user, and <span
+        class="inline-code">Bob</span> is the <span class="inline-code">admin</span> user. The policy will allow guests
+    to send HTTP <span class="inline-code">GET</span> requests to the <span class="inline-code">/productpage</span>
+    endpoint, and will allow admins to send HTTP <span class="inline-code">GET</span> requests to both the <span
+        class="inline-code">/productpage</span> and <span class="inline-code">/api/v1/products</span> endpoints.
+    </p>
+    <p class="content">
+        With a Rego policy defined, all that's left is a Kubernetes <span class="inline-code">Service</span> object to
+        allow requests to the OPA server.
+    <pre>
                 <code>
+kubectl apply -f - &lt;&lt;EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -271,17 +349,28 @@ spec:
     targetPort: 9191
   selector:
     app: opa-istio
+EOF
                 </code>
             </pre>
-            <br>
-            This simple service exposes the <span class="inline-code">9191</span> gRPC port we assigned the plugin to listen on to the cluster. 
-        </p>
-        <p>
-            There are two more Istio-specific tasks we need to complete before this tutorial is ready for testing. First, we need to register the OPA server as an <span class="inline-code">extensionProvider</span> in our Istio MeshConfig <span class="inline-code">ConfigMap.</span> This is one of the key differences when using OPA in Istio Ambient vs. using OPA with sidecars. In sidecar deployment mode, each application pod receives an additional OPA sidecar that is injected and the envoy proxy sidecar uses the local OPA sidecar for authorization. Since there are no sidecars in Ambient mode, it makes more sense to deploy one (or multiple... we'll discuss in a future article) instance of OPA to use as the authorizer globally, as we've done here.
-        </p>
-        <p>
-            If you've been following along and installed Ambient mode with the commands I provided, you'll want to edit the <span class="inline-code">istio</span> <span class="inline-code">ConfigMap</span> in the <span class="inline-code">istio-system</span> namespace, and edit the <span class="inline-code">mesh</span> value to add the <span class="inline-code">extensionProviders</span> block below:
-            <pre>
+    <br>
+    This simple service exposes the <span class="inline-code">9191</span> gRPC port we assigned the plugin to listen on
+    to the cluster.
+    </p>
+    <p class="content">
+        There are two more Istio-specific tasks we need to complete before this tutorial is ready for testing. First, we
+        need to register the OPA server as an <span class="inline-code">extensionProvider</span> in our Istio MeshConfig
+        <span class="inline-code">ConfigMap.</span> This is one of the key differences when using OPA in Istio Ambient
+        vs. using OPA with sidecars. In sidecar deployment mode, each application pod receives an additional OPA sidecar
+        that is injected and the envoy proxy sidecar uses the local OPA sidecar for authorization. Since there are no
+        sidecars in Ambient mode, it makes more sense to deploy one (or multiple... we'll discuss in a future article)
+        instance of OPA to use as the authorizer globally, as we've done here.
+    </p>
+    <p class="content">
+        If you've been following along and installed Ambient mode with the commands I provided, you'll want to edit the
+        <span class="inline-code">istio</span> <span class="inline-code">ConfigMap</span> in the <span
+            class="inline-code">istio-system</span> namespace, and edit the <span class="inline-code">mesh</span> value
+        to add the <span class="inline-code">extensionProviders</span> block below:
+    <pre>
                 <code>
 apiVersion: v1
 kind: ConfigMap
@@ -290,11 +379,13 @@ metadata:
   namespace: istio-system
 data:
   mesh: |-
+    <span class="comment"># ADD THESE LINES</span>
     extensionProviders:
     - name: opa-ext-authz-grpc
       envoyExtAuthzGrpc:
         service: opa-istio.platform.svc.cluster.local
         port: 9191
+    <span class="comment"># END ADDITIONS</span>
     defaultConfig:
       discoveryAddress: istiod.istio-system.svc:15012
       image:
@@ -310,36 +401,43 @@ data:
   meshNetworks: 'networks: {}'
                 </code>
             </pre>
-            <br>
-        </p>
-        <p>
-            Finally, we get to the fun part: testing our apps before and after adding authentication. Since we're using <span class="inline-code">kind</span> here, let's port-forward our waypoint's port to the local machine, so we can send requests to the waypoint. 
-            <code>
+    <br>
+    </p>
+    <p class="content">
+        Finally, we get to the fun part: testing our apps before and after adding authentication. Since we're using
+        <span class="inline-code">kind</span> here, let's port-forward our waypoint's port to the local machine, so we
+        can send requests to the waypoint.
+        <code>
                 kubectl port-forward -n app svc/bookinfo-gateway-istio 8080:80
             </code><br>
-            Next, let's send some sample traffic as <span class="inline-code">Alice</span> and <span class="inline-code">Bob</span>, respectively:
-            <code>
+        Next, let's send some sample traffic as <span class="inline-code">Alice</span> and <span
+            class="inline-code">Bob</span>, respectively:
+        <code>
                 curl --user alice:password -vik http://localhost:8080/api/v1/products
             </code>
-            <br>
-            <code>
+        <br>
+        <code>
                 curl --user alice:password -vik http://localhost:8080/productpage
             </code>
-            <br>
+        <br>
 
-            <code>
+        <code>
                 curl --user bob:password -vik http://localhost:8080/api/v1/products
             </code>
-            <br>
+        <br>
 
-            <code>
+        <code>
                 curl --user bob:password -vik http://localhost:8080/productpage
             </code>
-        </p>
-        <p>
-            All four of these requests should succeed. While we have configured all the necessary resources for OPA to serve as the external authorizer for the Waypoint, we haven't actually applied an Istio <span class="inline-code">AuthorizationPolicy</span> to tell Istio to use the OPA server as an authorizer. Let's do that now:
-            <pre>
+    </p>
+    <p class="content">
+        All four of these requests should succeed. While we have configured all the necessary resources for OPA to serve
+        as the external authorizer for the Waypoint, we haven't actually applied an Istio <span
+            class="inline-code">AuthorizationPolicy</span> to tell Istio to use the OPA server as an authorizer. Let's
+        do that now:
+    <pre>
                 <code>
+kubectl apply -f - &lt;&lt;EOF
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
@@ -352,32 +450,40 @@ spec:
   rules:
   - to:
     - operation:
-        notPaths: ["/health"]
+        paths: ["*"]
+EOF
                 </code>
             </pre>
-            <br>
-            This <span class="inline-code">AuthorizationPolicy</span> selects the <span class="inline-code">opa-ext-authz-grpc</span> provider as the external authorizer, which you'll notice matches what we defined in the <span class="inline-code">istio</span> system-side <span class="inline-code">ConfigMap</span>. It applies authorization via the OPA server to all requests through this waypoint, except for the health endpoint. (TODO: is this necessary?). Now that we've applied the <span class="inline-code">AuthorizationPolicy</span>, let's run traffic through again and validate what we expect:
-            <code>
-                curl --user alice:password -vik http://localhost:8080/api/v1/products # This should fail with a 403
+    </p>
+    <p class="content">
+    This <span class="inline-code">AuthorizationPolicy</span> selects the <span
+        class="inline-code">opa-ext-authz-grpc</span> provider as the external authorizer, which you'll notice matches
+    what we defined in the <span class="inline-code">istio</span> system-side <span
+        class="inline-code">ConfigMap</span>. It applies authorization via the OPA server to all requests through this
+    waypoint, except for the health endpoint. (TODO: is this necessary?). Now that we've applied the <span
+        class="inline-code">AuthorizationPolicy</span>, let's run traffic through again and validate what we expect:
+    <code>
+                curl --user alice:password -vik http://localhost:8080/api/v1/products <span class="comment"># This should fail with a 403</span>
             </code>
-            <br>
 
-            <code>
-                curl --user alice:password -vik http://localhost:8080/productpage # This should succeed with an HTML response
+    <code>
+                curl --user alice:password -vik http://localhost:8080/productpage <span class="comment"># This should succeed with an HTML response</span>
             </code>
-            <br>
 
-            <code>
-                curl --user bob:password -vik http://localhost:8080/api/v1/products # This should succeed with a JSON response
+    <code>
+                curl --user bob:password -vik http://localhost:8080/api/v1/products <span class="comment"># This should succeed with a JSON response</span>
             </code>
-            <br>
 
-            <code>
-                curl --user bob:password -vik http://localhost:8080/productpage # This should succeed with an HTML response
+    <code>
+                curl --user bob:password -vik http://localhost:8080/productpage <span class="comment"># This should succeed with an HTML response</span>
             </code>
-        </p>
-        <p>
-            If you've made it this far, congratulations! Hopefully this tutorial helps you see how easy it is to set up Ambient Mesh with Open Policy Agent as an external authorizer. It's arguably easier than using OPA in sidecar mode, and certainly more resource-effecient. Next time, we'll discuss best practices for using OPA as an authorizer with Waypoint proxies in Ambient mode, including deployment topology, scaling and testing.
-        </p>
-    </body>
+    </p>
+    <p class="content">
+        If you've made it this far, congratulations! Hopefully this tutorial helps you see how easy it is to set up
+        Ambient Mesh with Open Policy Agent as an external authorizer. It's arguably easier than using OPA in sidecar
+        mode, and certainly more resource-effecient. Next time, we'll discuss best practices for using OPA as an
+        authorizer with Waypoint proxies in Ambient mode, including deployment topology, scaling and testing.
+    </p>
+</body>
+
 </html>
