@@ -156,28 +156,28 @@ kubectl apply -f - &lt;&lt;EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: opa-istio
-    namespace: platform
+  name: opa-istio
+  namespace: platform
 spec:
-    replicas: 1
-    selector:
+  replicas: 1
+  selector:
     matchLabels:
-        app: opa-istio
-    template:
+      app: opa-istio
+  template:
     metadata:
-        labels:
+      labels:
         app: opa-istio
     spec:
-        containers:
-        - name: opa-istio
+      containers:
+      - name: opa-istio
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9191
-            protocol: TCP
+          protocol: TCP
         - containerPort: 8282
-            protocol: TCP
+          protocol: TCP
         - containerPort: 8181
-            protocol: TCP
+          protocol: TCP
         image: openpolicyagent/opa:0.68.0-istio-4-static
         args:
         - "run"
@@ -188,24 +188,24 @@ spec:
         - "/policy/policy.rego"
         volumeMounts:
         - name: opa-istio-config
-            mountPath: /config
+          mountPath: /config
         - name: opa-policy
-            mountPath: /policy
+          mountPath: /policy
         livenessProbe:
-            httpGet:
+          httpGet:
             path: /health?plugins
             port: 8282
         readinessProbe:
-            httpGet:
+          httpGet:
             path: /health?plugins
             port: 8282
-        volumes:
-        - name: opa-istio-config
+      volumes:
+      - name: opa-istio-config
         configMap:
-            name: opa-istio-config
-        - name: opa-policy
+          name: opa-istio-config
+      - name: opa-policy
         configMap:
-            name: opa-policy
+          name: opa-policy
 EOF
             </code>
         </pre>
