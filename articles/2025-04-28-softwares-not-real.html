@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Software is Not Real until it is Deployed | Tyler Schade</title>
+</head>
+
+<body>
+    <header>
+        <h1>Tyler Schade</h1>
+        <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="https://tylerscha.de">Home</a></li>
+                    <li><a href="https://tylerscha.de/now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <h2>Software is Not Real until it is Deployed</h2>
+    <p class="content">
+        I'm clearly behind on my writing for the year, but there's no time like the present to catch up. Work has been incredibly, delightfully busy, and I have been short of time to do much else. As I mentioned in my 2025 goals post, I'm currently leading a team (and spending significant time hands-on-keyboard myself!) to build a brand-new networking and security product. We're about 3 months into development, and what began as a small Go project one evening has completely been refactored away into something pretty cool!
+    </p>
+    <p class="content">
+        We're doing fine relative to our deadlines - not too far ahead, but certainly not behind. Greenfield, from-scratch, zero-to-one product development is really fun, but it's a different mindset from iteration-based, one-to-one-point-one, "feature factory" style development on an existing product. I've been stretched to think about ways to structure the unstructured act of creation so that it can scale beyond my brain into responsibilities that are delegated to my team.
+    </p>
+    <p class="content">
+        One realization I had this weekend: "Software is Not Real until it is Deployed". Might sound trivial if you're working on an existing project that has defined build, test and release pipelines, with <i>a priori</i> environments. It's pretty clear when a feature can be considered "minimally viable": does it work in a representative environment? But when none of those things exist, it can become much more challenging to decide when a feature is 25% of the way to done, 50% of the way to done (usually, in my experience, the rough heuristic I use for feature "minimum viability"), or 100% dev complete and ready to ship.
+    </p>
+    <p class="content">
+        Greenfield product development work is hard to quantify in this way because the tools to create a fully representative environment don't exist, and can require significant investment of time to build themselves, particularly when it feels like core features still aren't yet complete. But, if <i>Software is Not Real until it is Deployed</i>, then investing the time to bootstrap shared dev, test and demo environments <i>is a core feature that you're missing</i>, and I am coming to believe that it is a razor that cuts between the intangible "it works on my laptop and in the test suite", and "it works on my laptop and in the test suite, and deployed successfully to the demo environment in last night's build, where stakeholder #1 used the feature today and left 3 points of feedback". It's impossible to get that kind of feedback loop without pushing somewhere, which means that setting up those test deployments needs to be priority #1.
+    </p>
+    <p class="content">
+        This week, I'll be assigning an engineer to build infrastructure to run our product. We're not done, and frankly we're not even 25% feature complete. But the 20% of features that we have completed "is Not Real until it is Deployed". This week, it needs to become "Real".
+    </p>
+</body>
+
+</html>
