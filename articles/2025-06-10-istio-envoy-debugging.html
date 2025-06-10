@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Advanced Istio Debugging | Tyler Schade</title>
+</head>
+
+<body>
+    <header>
+        <h1>Tyler Schade</h1>
+        <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="https://tylerscha.de">Home</a></li>
+                    <li><a href="https://tylerscha.de/now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <h2>Advanced Istio Debugging</h2>
+    <p class="content">
+        I have spent much of the first half of this year teaching a team of both experienced, and not-experienced engineers how Istio works. Through that process, I have been reminded of many of the issues that I ran into initially when learning Istio and trying to debug misconfigurations, core bugs, and general unexpected behavior. Far and away, <i>debugging Istio</i> seems to be harder than <i>understanding Istio</i>, at least for most engineers. This holds true, even for experienced Go programmers.
+    </p>
+    <p class="content">
+        To be honest, despite my 3.5 years working with Istio <i>nearly daily</i>, I, too, still often find myself confused about configuration or other issues. But, I have a few tools in my toolbox that I continually reach for and want to share with you too. 
+    </p>
+    <p class="content">
+        Understanding Envoy is absolutely far and away the most important part of debugging Istio. Most Istio debugging situations boil down to misconfigurations: maybe you mangled a selector in YAML manifest, or worse, the nil slice you passed into the Rules field on an AuthorizationPolicy in your operator is denying all traffic? That VirtualService attached to the Gateway is 404ing? The Istio docs are <i>good</i>, but are very YAML-centric and tend towards basic-and-intermediate use-cases, not towards the advanced engineering team building on top of Istio. In these and other similar situations, a deep understanding of Envoy and a willingness to inspect the XDS configuration in a misbehaving Istio Proxy instance is the difference between 4 days spent asking for help in Slack and Github Discussions, and resolving the issue in an hour. The <span class="inline-code">istioctl proxy-config</span> commands are in valuable, particularly the <span class="inline-code">istioctl proxy-config all ... -ojson > config.json</span> gives an engineer full visibility into <i>exactly</i> what configuration that instance has received, and a lot of clues as to where to follow up. To develop a strong understanding of Envoy, I recommend reading the Envoy docs themselves and working through the <a href="https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/setup">Envoy sandboxes</a>. Taking a couple days to work through the sandboxes for filters like <a href="https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/ext_authz">ext_authz</a>, <a href="https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/tls">TLS</a>, and <a href="https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/locality-load-balancing">Locality Weighted Load Balancing</a> can increase your understanding surprisingly quickly. 
+    </p>
+    <p class="content">
+        If Envoy configuration does not reveal the root cause of an issue (and it will not always), the second-most valuable tool I have found is <i>read the Istio source code</i>. Better yet, <i>run the Istio source code</i>. While a little dated, <a href="https://github.com/howardjohn/local-istio-development">John Howard's guide to developing Istio locally</a> still contains much of the information you need to create an environment where you can step through <span class="inline-code">istiod</span> in a cluster with <span class="inline-code">dlv</span>, and often that is my second line of defense. Reading and running the code provides a level of insight that documentation, blog posts, and conversations never will. While it can be intimidating, particularly for engineers new to Go or Kubernetes, access to the codebase and ability to freely modify it is the defining characteristic of open-source software, and if you are building systems on top of open-source components, it is a fundamental part of your job to understand, not merely consume.
+    </p>
+    <p class="content">
+        You thought my tools were going to be some secret knowledge that no one else has access to? Nope! At the end of the day, the secret is actually understanding the internals, and not just the configuration interfaces, of the system. Understanding Envoy's architecture and configuration language is not easy, but sandboxes make it approachable and this understanding is probably the single biggest leverage point. Building, running and debugging the project's codebase is essential to successfully adopting an open-source project in an enterprise environment, and I am continually surprised that not everyone sees it this way, whether consuming Istio, Kubernetes, Postgresql, Kafka, or any other complex system that big companies choose to adopt. With Istio, the codebase is somewhat approachable and does lend itself to easy debugging. There is no substitute for hard work in developing debugging knowledge, but committing to understanding Envoy and reading Istio's codebase will significantly shorten the learning curve.
+    </p>
+</body>
+</html>
