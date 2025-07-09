@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Boundaries, Interactions, Guarantees | Tyler Schade</title>
+</head>
+<body>
+    <header>
+        <h1>Tyler Schade</h1>
+        <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="https://tylerscha.de">Home</a></li>
+                    <li><a href="https://tylerscha.de/now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <h2>Boundaries, Interactions, Guarantees</h2>
+    <p class="content">
+        A few weeks ago, I found myself trying to explain "smell-testing" designs to an engineer who leads one of the teams I work with. 
+        In my role as a distinguished engineer, I work across several departments and teams. There's one team I technically "own" and manage
+        their day to day work. I review all their PRs, write substantial code for the project myself, and am accountable for delivery and planning. There's
+        another team that I provide oversight to, by serving as an system architect and decision maker. Then there's other teams that I work with, less closely,
+        as needs may arise.
+    </p>
+    <p class="content">
+        This engineer was expressing overwhelm about how the project he is trying to lead is so different from what he's seen in his 20+ years in the industry.
+        I empathize. Everything is a little different, everywhere, and nothing fits together quite like you'd expect. He asked me how I can confidently make 
+        decisions without having the time to work through each problem myself in depth. I encouraged him to practice smell-testing, and he looked a little confused.
+    </p>
+    <p class="content">
+        Later that night, I was walking to dinner and found myself attempting to explain this to Zoë. She asked: "what do you mean, smell test?". I paused, and
+        then formulated three principals that I try to use when I smell test.
+        <ul>
+            <li>Boundaries</li>
+            <li>Interactions</li>
+            <li>Guarantees</li>
+        </ul>
+    </p>
+    <h3>Boundaries</h3>
+    <p class="content">
+        When I look at a system, whether existing or new and yet to be implement, I try to analyze the boundaries. Boundaries are the edges - the outer part of the 
+        scope of the intended system. Are the boundaries too broad? Is this system trying to manage too many things? Conversely, are the boundaries too narrow? Sometimes
+        a perfectly good system can fail because it was designed for far too narrow a scope, relative to the problem this system is intended to solve. $EXAMPLE.
+    </p>
+    <p class="content">
+        Unfortunately, boundary analysis is entirely a "feel" thing. It's hard for me to quantify, and I'm not sure that I'm qualified to teach it; however, I know that
+        when I look at a new system I haven't seen before, the first thing I do as part of smell testing is examine the boundaries.
+    </p>
+    <h3>Interactions</h3>
+    <p class="content">
+        asdf;kljasdfj;asd;fjla;lskjd;kljasdfj;lasdf;kladfs
+    </p>
+    <h3>Guarantees</h3>
+    <p class="content">
+        asdf;lkasdf;ljkasdjl;;alsa;klsjdf
+    </p>
+</body>
+
+</html>
