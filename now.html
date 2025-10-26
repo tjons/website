@@ -21,10 +21,10 @@
     </header>
     <h2>What I'm doing now</h2>
     <div>
-        <p class="lately-date">Last updated Saturday, July 20th, 2024</p>
-        <p>Currently, I'm sitting in a coffeeshop in Miami, converting this site from Jekyll (which was overkill and annoying for my needs) to raw html and css. I've just wrapped up a <a href="https://github.com/open-policy-agent/opa/pull/6873">contribution</a> to <a href="https://openpolicyagent.org">OPA</a>, an open-source project I'm a regular contributor too, and I'm sipping some lovely espresso with Zoë by my side.</p>
-        <p>I just got back from four days in Alaska, which was an astoundingly beautiful last-miunte trip Alex and I took last weekend. I did backcountry hiking in Denali State Park, Denali National Park and Hatcher Pass. On the fourth day I got to ride downhill MTB at Alyeska Resort on the Turnagain arm. Alaska is by far the most gorgeous place I've ever been and I'm looking forward to returning.</p>
-        <p>I'm still reading <a href="https://amzn.to/3WXfxER"><i>Concurrency in Go</i></a>, with about 45 pages left to go.</p>
+        <p class="lately-date">Last updated Sunday, October 26th, 2025</p>
+        <p>It has been a really busy year, and I haven't been able to write as much as I planned. Currently, I am at home after a week traveling to Tucson, Arizona for work. Kubecon is coming up, and so I am procrastinating on my talk prep and have completely rebuilt this website's hosting infrastructure this morning.</p>
+        <p>I'm reading <a href="https://www.amazon.com/Fall-Dodge-Hell-Neal-Stephenson/dp/0062458728/"><i>Fall; or, Dodge in Hell</i></a>, by Neal Stephenson. It is a great book, and I am getting excited about SciFi for the first time in a while. For technical reading, I am slowly working my way through <a href="https://www.amazon.com/Practical-Guide-TPM-2-0-Platform/dp/1430265833"><i>A Practical Guide to TPM 2.0</i></a>, which is available as a free eBook. I've spent a lot of time this year thinking about and working with TPMs.</p>
+        <p>This website is now served to you by a Hetzner Cloud VM running Fedora 42, in Ashburn, VA. The server is listening on a port served by an Envoy Proxy service, configured with systemd. The website contents are served to you by an nginx docker container, also configured by systemd. I built Envoy from source for this successfully, after many attempts. The server is managed by Terraform and the website is configured by an Ansible playbook. The website <a href="github.com/tjons/website">continues to live as a git repo</a>, with a systemd timer that reloads the git repository every 5 minutes. If you see this, it worked!</p>
     </div>
 </body>
 
