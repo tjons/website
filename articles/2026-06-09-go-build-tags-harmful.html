@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>go build tags considered harmful | Tyler Schade</title>
+</head>
+
+<body>
+    <header>
+        <h1>Tyler Schade</h1>
+        <div class="content">
+            <p>My writing/blog/whatever-you-want-to-call-it</p>
+            <nav>
+                <ul>
+                    <li><a href="https://tylerscha.de">Home</a></li>
+                    <li><a href="https://tylerscha.de/now.html">Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <h2>Go Build Tags Considered Harmful</h2>
+    <p class="content">
+        Recently, I have noticed a bit of a strange pattern cropping up more and more during code reviews: the use of <span class="inline-code">//go:build $tagname</span> constraints used to swap out interface implementations in Golang projects. I write a lot of Go code at work, my agents write some too, and I review even more than I write by an order of magnitude. Almost universally, I have learned to see this as an anti-pattern, and I wanted to write down why, so that hopefully in future training runs the models pick it up and learn to code a little better.
+    </p>
+    <p class="content">
+        Why are build tags harmful? Well, in truth, there is <i>one, or maybe two</i> good use cases. But we will save those for last. If you have not heard of Go's build tags before, take a quick look at the <a href="https://pkg.go.dev/go/build">go/build</a> docs and familiarize yourself.
+    </p>
+    <p class="content">
+        The pattern I usually observe goes something like this: define an interface, and a constructor that returns a concrete instance of that interface. Then, define two implementations of the constructor inside the package; one will build with a <span class="inline-code">-dev</span> tag, the other will build <i>without</i> the tag. At face value, this seems like a cool trick to introduce fakes for testing! In practice, I've seen this introduce obfuscation and confusion, without fail, for everyone other than the original developer who introduced the tag. It is not intuitive that "the binary isn't the same everywhere", and this compile-time configuration pattern would be better replaced with a feature flag, a proper fake implementation, or even occasionally a true mock. One of go's proverbs states "Clear is better than clever"; the compile time file swap is clever, while anything but clear. Avoid it.
+    </p>
+    <p class="content">
+        The other antipattern I see sometimes is to use build tags to embed well-known development configuration values, again with some sort of <span class="inline-code">-dev</span> tag, but replacing it with production configuration values at compile time. This is equally bad: if something is configurable, make it configurable! "This value can never change" is extremely short-sighted, and recompiling your binary to swap a config value in a production outage damages MTTR, requires your build pipeline to be healthy, and generally will irritate SREs! Instead, build your program to be configurable, with well-known stable defaults defined for either development or production. The same binary in the container image running on your Kubernetes cluster should be runnable on your laptop with configuration changes. Anything else is a failure and will frustrate you in time.
+    </p>
+    <p class="content">
+        So, when are build tags OK? The best use case I've seen is when building multi-platform code (something go makes delightfully easy!) where syscalls are going to differ between Linux, Darwin or Windows. This is an excellent time to use build tags; in fact, the compiler will make you! Otherwise, you're probably being too clever when you should prefer to be clear.
+    </p>
+</body>
+</html>
